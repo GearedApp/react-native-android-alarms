@@ -191,10 +191,11 @@ This React Native library will allow you to schedule and show alarms on Android 
  
  ### Clearing Alarms
  ```
- AndroidAlarms.clearAlarm(alarmID); // Clears mounted alarmID. If you restarted app and want to clear an alarm, simply load it from AsyncStorage.
+ AndroidAlarms.clearAlarm(alarmID); // Clears mounted alarmID. 
  ``` 
  or
  ``` 
+ // If you restarted app and want to clear an alarm, simply load it from AsyncStorage.
  AsyncStorage.getItem('alarmID').then((value) => {
     AndroidAlarms.clearAlarm(JSON.parse(value)); 
  });
