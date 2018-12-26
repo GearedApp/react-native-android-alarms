@@ -1,10 +1,10 @@
-This is moded version of this [CMP Studio library](https://github.com/CMP-Studio/react-native-android-alarms). IDK if it works on iOS, nontheless I also modified index.ios.js
+This is moded version of this [CMP Studio library](https://github.com/CMP-Studio/react-native-android-alarms). I have no idea if it works on iOS, nontheless I also modified index.ios.js
 
 This React Native library will allow you to schedule and show alarms on Android (tested on >= API 21). To see a working example of this module (original one), see [Dawn Chorus](https://github.com/CMP-Studio/DawnChorus). The code for this module was modified from [Christoph Michel's App Launcher](https://github.com/MrToph/react-native-app-launcher).
 
 ## Features
 * Schedules alarms using AlarmManager
-* Alarm reciever that will launch application at alarm time and run alarm ringtone, even if the application is closed
+* Alarm reciever that will launch application at alarm time and run android alarm ringtone, even if the application is closed
 * Minimize function that simulates home button and will programatically minimize your app
 * Reschedules alarms after phone boots back up
 * Notifies users of alarms they may have missed when their phone was off
@@ -16,7 +16,7 @@ This React Native library will allow you to schedule and show alarms on Android 
     ```
     or 
     ```
-    yarn add https://github.com/vasyl91/react-native-android-alarms.git`
+    yarn add https://github.com/vasyl91/react-native-android-alarms.git
     ```
 
 * Add the following to `android/settings.gradle`:
@@ -134,10 +134,14 @@ This React Native library will allow you to schedule and show alarms on Android 
                 if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
                     mInitialProps.putBoolean("alarmOn", true);
                 }
-            }       
+            } 	    
+	        /* 
+	        * Code below checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
+	        * LauncherModule.startAlarm(mActivity) initiates android alarm ringtone. If you want to use ringtone provided by app - simply remove this part of code.
+	        */
             ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
             ReactApplicationContext context = (ReactApplicationContext) mReactInstanceManager.getCurrentReactContext();    
-            if (context == null) { // Checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
+            if (context == null) { 
                 mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                     public void onReactContextInitialized(ReactContext context) {
                         if (bundle != null && bundle.containsKey("sendAlarm")) {
@@ -213,7 +217,7 @@ This React Native library will allow you to schedule and show alarms on Android 
  
  ### Reading data in React Native app
  
-If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component (usually index.android.js)
+If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component (usually index.android.js):
  
  ```
  static propTypes = {
@@ -226,13 +230,16 @@ If you extended your ReactActivityDelegate as shown above, you can grab the init
  
  ### Receiving An Alarm
  
-If the app was launched by an alarm, the alarmID will hold the id of the alarm that went off and alarmOn will return ```true```. If the app was not launched from an alarm, ```alarmID = undefined``` and ```alarmOn = undefined```.
+If the app was launched by an alarm, the ```alarmID``` will hold the ID of the alarm that went off and ```alarmOn``` will return ```true```. If the app was not launched from an alarm, ```alarmID = undefined``` and ```alarmOn = undefined```.
 
- ```this.props.alarmOn``` can be used to run initial alarm scene with Dismiss and Snooze buttons
+ ```this.props.alarmOn``` can be used to run initial alarm scene with Dismiss and Snooze buttons.
  
+ Add to your main app component:
  ```
- if (this.props.alarmOn === true) {
-    // your code
+ componentDidMount() {
+     if (this.props.alarmOn === true) {
+         // your code
+     }
  }
  ```
  
