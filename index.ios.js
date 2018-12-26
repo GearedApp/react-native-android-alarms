@@ -10,6 +10,14 @@ class AndroidAlarms {
   static clearAlarm() {
     console.warn(fail);
   }
+  
+  static stopAlarm() {
+    console.warn(fail);
+  }
+	
+  static minimizeApp() {
+     console.warn(fail);
+  }
 
 }
 

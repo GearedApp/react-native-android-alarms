@@ -1,5 +1,6 @@
 package com.dawnchorus.alarms;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,20 +8,45 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.content.SharedPreferences;
-import android.app.Activity;
-
+import android.media.AudioManager;
+import android.util.Log;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.ReactActivity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 public class LauncherModule extends ReactContextBaseJavaModule {
 
+  private static MediaPlayer mediaPlayer;
+  private static Uri uri;
+  private static ReactApplicationContext reactContext;
+  private static WeakReference<Activity> mActivity;
+  
   public LauncherModule(ReactApplicationContext reactContext) {
     super(reactContext);
+  	this.reactContext = reactContext;
+  	uri = initRingtone();
+  }
+  
+  private Uri initRingtone() {
+    int[] trySounds = new int[] {
+      RingtoneManager.TYPE_ALARM
+    };
+    int i = 0;
+    while(i < trySounds.length) {
+        Uri uri = RingtoneManager.getDefaultUri(trySounds[i]);
+        i++;
+        if(uri != null) return uri;
+    }
+    return null;
   }
 
   @Override
@@ -32,6 +58,42 @@ public class LauncherModule extends ReactContextBaseJavaModule {
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     return constants;
+  }
+  
+  // Runs android alarm ringtone
+  public static void startAlarm(final Activity activity) {
+    mActivity = new WeakReference<Activity>(activity);
+    activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+		mediaPlayer = new MediaPlayer();
+		try{
+		  mediaPlayer.setLooping(true);
+		  mediaPlayer.setDataSource(reactContext, uri);
+		  mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+		  mediaPlayer.prepare();
+		  mediaPlayer.start();
+		} catch(Exception ex){
+		  Log.i("ALARM MESSAGE", (ex == null ? "Error Message was null" : ex.getMessage()));
+		  ex.printStackTrace();
+		}
+        }
+    });
+  }
+  
+  @ReactMethod
+  public final void stopAlarm() {
+    if(mediaPlayer == null) return;
+    mediaPlayer.stop(); 
+  }
+  
+  // Simulates Home button and minimizes the app
+  @ReactMethod
+  public final void minimizeApp() {
+    Intent startMain = new Intent(Intent.ACTION_MAIN);
+    startMain.addCategory(Intent.CATEGORY_HOME);
+    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    reactContext.startActivity(startMain);
   }
 
   /**

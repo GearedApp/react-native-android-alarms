@@ -1,13 +1,24 @@
-This React Native library will allow you to schedule and show alarms on Android (tested on >= API 21). To see a working example of this module, see [Dawn Chorus](https://github.com/CMP-Studio/DawnChorus). The code for this module was modified from [Christoph Michel's App Launcher](https://github.com/MrToph/react-native-app-launcher).
+This is moded version of this [CMP Studio library](https://github.com/CMP-Studio/react-native-android-alarms). IDK if it works on iOS, nontheless I also modified index.ios.js
+
+This React Native library will allow you to schedule and show alarms on Android (tested on >= API 21). To see a working example of this module (original one), see [Dawn Chorus](https://github.com/CMP-Studio/DawnChorus). The code for this module was modified from [Christoph Michel's App Launcher](https://github.com/MrToph/react-native-app-launcher).
 
 ## Features
 * Schedules alarms using AlarmManager
-* Alarm reciever that will launch application at alarm time, even if the application is closed
+* Alarm reciever that will launch application at alarm time and run alarm ringtone, even if the application is closed
+* Minimize function that simulates home button and will programatically minimize your app
 * Reschedules alarms after phone boots back up
 * Notifies users of alarms they may have missed when their phone was off
 
 ## Installation
-* Run `npm install --save git+https://github.com/CMP-Studio/react-native-android-alarms.git`
+* Run 
+    ```
+    npm install --save git+https://github.com/vasyl91/react-native-android-alarms.git
+    ```
+    or 
+    ```
+    yarn add https://github.com/vasyl91/react-native-android-alarms.git`
+    ```
+
 * Add the following to `android/settings.gradle`:
     ```
     include ':react-native-android-alarms'
@@ -71,10 +82,22 @@ This React Native library will allow you to schedule and show alarms on Android 
     ```
     
     
-* In `MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props
+* In `android/app/src/main/java/**/MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props
     
     ```
-    @Override
+	import android.app.Activity;
+	import android.content.Intent;
+	import android.os.Bundle;
+	import android.view.Window;
+	import android.view.WindowManager;
+	import com.facebook.react.bridge.ReactApplicationContext;
+	import com.facebook.react.bridge.ReactContext;
+	import com.facebook.react.ReactActivity;
+	import com.facebook.react.ReactActivityDelegate;
+	import com.facebook.react.ReactInstanceManager;    
+	import com.dawnchorus.alarms.LauncherModule;
+	
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // add
@@ -100,15 +123,36 @@ This React Native library will allow you to schedule and show alarms on Android 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             mInitialProps = new Bundle();
-            // bundle is where we put our alarmID with launchIntent.putExtra
-            Bundle bundle = mActivity.getIntent().getExtras();
+            final Bundle bundle = mActivity.getIntent().getExtras();
             if (bundle != null && bundle.containsKey(ALARM_ID)) {
-                // put any initialProps here
                 mInitialProps.putString(ALARM_ID, bundle.getString(ALARM_ID));
             }
             if (bundle != null && bundle.containsKey(MISSED_ALARMS)) {
-                // put any initialProps here
                 mInitialProps.putString(MISSED_ALARMS, bundle.getString(MISSED_ALARMS));
+            }   
+            if (bundle != null && bundle.containsKey("sendAlarm")) {
+                if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                    mInitialProps.putBoolean("alarmOn", true);
+                }
+            }       
+            ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
+            ReactApplicationContext context = (ReactApplicationContext) mReactInstanceManager.getCurrentReactContext();    
+            if (context == null) { // Checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
+                mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+                    public void onReactContextInitialized(ReactContext context) {
+                        if (bundle != null && bundle.containsKey("sendAlarm")) {
+                            if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                                LauncherModule.startAlarm(mActivity); 
+                            }
+                        }                                
+                    }
+                });
+            } else {
+                if (bundle != null && bundle.containsKey("sendAlarm")) {
+                    if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                        LauncherModule.startAlarm(mActivity); 
+                    }
+                }                  
             }
             super.onCreate(savedInstanceState);
         }
@@ -127,38 +171,70 @@ This React Native library will allow you to schedule and show alarms on Android 
     
  ## Usage
  
+ Apart from [Dawn Chorus](https://github.com/CMP-Studio/DawnChorus) - working example of this module, you can also see a simple example of complete MainActivity.java provided in example folder.
+ 
  ### Scheduling Alarms
  ```
  import AndroidAlarms from 'react-native-android-alarms';
  import moment from 'moment';
+ import { AsyncStorage } from "react-native";
  
- alarmTime = moment(); // Edit this moment object to your correct time...
+ alarmID = ... // String or number, whatever you want. Necessary to identify your alarm. You can save it with AsyncStorage to further use (e.g. to load it and cancel alarm in another scene or in case app was restarted) 
+ alarmTime = Number(moment()) + 5000; // In this case alarm will be triggered in 5 seconds. You can also edit moment() itself to your correct time
  
  // Set the alarm and return the time 
  AndroidAlarms.setAlarm(alarmID, alarmTime.valueOf(), false);
+ 
+ // Optionally save alarmID to AsyncStorage
+ AsyncStorage.setItem('alarmID', JSON.stringify(alarmID));
  ```
  
  ### Clearing Alarms
  ```
- AndroidAlarms.clearAlarm(alarmID);
+ AndroidAlarms.clearAlarm(alarmID); // Clears mounted alarmID. If you restarted app and want to clear an alarm, simply load it from AsyncStorage.
+ ``` 
+ or
+ ``` 
+ AsyncStorage.getItem('alarmID').then((value) => {
+    AndroidAlarms.clearAlarm(JSON.parse(value)); 
+ });
+ ```
+ 
+ ### Dismissing Alarm
+ ```
+ AndroidAlarms.stopAlarm(); // Turns ringtone off.
  ```
 
+ ### Minimizing app
+ ```
+ AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your app while tapping on it and android will turn the screen off after while.
+ ```
+ 
  ### Reading data in React Native app
  
-If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component
+If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component (usually index.android.js)
  
  ```
  static propTypes = {
     alarmID: PropTypes.string,
     missedAlarms: PropTypes.string,
-  }
+    alarmOn: PropTypes.boolean
+ }
  ```
- And access those props elsewhere in the component with ```this.props.alarmID``` and ```this.props.missedAlarms```
+ And access those props elsewhere in the component with ```this.props.alarmID```, ```this.props.missedAlarms``` and ```this.props.alarmOn```
  
  ### Receiving An Alarm
  
-If the app was launched by an alarm, the alarmID will hold the id of the alarm that went off. If the app was not launched from an alarm, ```alarmID = undefined```.
+If the app was launched by an alarm, the alarmID will hold the id of the alarm that went off and alarmOn will return ```true```. If the app was not launched from an alarm, ```alarmID = undefined``` and ```alarmOn = undefined```.
 
+ ```this.props.alarmOn``` can be used to run initial alarm scene with Dismiss and Snooze buttons.
+ 
+ ```
+ if (this.props.alarmOn === true) {
+    // your code
+ }
+ ```
+ 
 NOTE: In Android 8.0 and above, clicking the alarm icon in the Android notification drawer will launch the app and include the alarmID as an initial prop. To avoid this setting off the alarm, double check that it is the alarm time before sounding your alarm.
  
  ### Handling Missed Alarms
