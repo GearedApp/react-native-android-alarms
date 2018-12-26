@@ -179,7 +179,7 @@ This React Native library will allow you to schedule and show alarms on Android 
  import moment from 'moment';
  import { AsyncStorage } from "react-native";
  
- alarmID = ... // String or number, whatever you want. Necessary to identify your alarm. You can save it with AsyncStorage to further use (e.g. to load it and cancel alarm in another scene or in case app was restarted) 
+ alarmID = ... // String or number, whatever you want. Necessary to identify your alarm. You can save it with AsyncStorage for further use (e.g. to load it and cancel an alarm in another scene or in case the app was restarted)
  alarmTime = Number(moment()) + 5000; // In this case alarm will be triggered in 5 seconds. You can also edit moment() itself to your correct time
  
  // Set the alarm and return the time 
@@ -191,11 +191,11 @@ This React Native library will allow you to schedule and show alarms on Android 
  
  ### Clearing Alarms
  ```
- AndroidAlarms.clearAlarm(alarmID); // Clears mounted alarmID. 
+ AndroidAlarms.clearAlarm(alarmID); // Clears mounted alarmID
  ``` 
  or
  ``` 
- // If you restarted app and want to clear an alarm, simply load it from AsyncStorage.
+ // If you restarted app and want to clear an alarm, simply load it from AsyncStorage
  AsyncStorage.getItem('alarmID').then((value) => {
     AndroidAlarms.clearAlarm(JSON.parse(value)); 
  });
@@ -203,12 +203,12 @@ This React Native library will allow you to schedule and show alarms on Android 
  
  ### Dismissing Alarm
  ```
- AndroidAlarms.stopAlarm(); // Turns ringtone off.
+ AndroidAlarms.stopAlarm(); // Turns ringtone off
  ```
 
  ### Minimizing app
  ```
- AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your app while tapping on it and android will turn the screen off after while.
+ AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your app while tapping on it and android will turn the screen off after while
  ```
  
  ### Reading data in React Native app
@@ -228,7 +228,7 @@ If you extended your ReactActivityDelegate as shown above, you can grab the init
  
 If the app was launched by an alarm, the alarmID will hold the id of the alarm that went off and alarmOn will return ```true```. If the app was not launched from an alarm, ```alarmID = undefined``` and ```alarmOn = undefined```.
 
- ```this.props.alarmOn``` can be used to run initial alarm scene with Dismiss and Snooze buttons.
+ ```this.props.alarmOn``` can be used to run initial alarm scene with Dismiss and Snooze buttons
  
  ```
  if (this.props.alarmOn === true) {
