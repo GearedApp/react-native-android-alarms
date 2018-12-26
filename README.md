@@ -208,7 +208,7 @@ This React Native library will allow you to schedule and show alarms on Android 
 
  ### Minimizing app
  ```
- AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your app while tapping on it and android will turn the screen off after while
+ AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents android from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your the app while tapping on it and android will turn the screen off shortly after
  ```
  
  ### Reading data in React Native app
