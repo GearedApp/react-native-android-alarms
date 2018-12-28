@@ -129,31 +129,31 @@ This React Native library will allow you to schedule and show alarms on Android 
             }
             if (bundle != null && bundle.containsKey(MISSED_ALARMS)) {
                 mInitialProps.putString(MISSED_ALARMS, bundle.getString(MISSED_ALARMS));
-            }   
-            if (bundle != null && bundle.containsKey("sendAlarm")) {
-                if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+            }
+            if (bundle != null && bundle.containsKey("launchAlarm")) {
+                if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
                     mInitialProps.putBoolean("alarmOn", true);
                 }
-            } 	    
+            }
 	        /* 
 	        * Code below checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
 	        * LauncherModule.startAlarm(mActivity) initiates android alarm ringtone. If you want to use ringtone provided by app - simply remove this part of code.
 	        */
             ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
             ReactApplicationContext context = (ReactApplicationContext) mReactInstanceManager.getCurrentReactContext();    
-            if (context == null) { 
+            if (context == null) {
                 mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                     public void onReactContextInitialized(ReactContext context) {
-                        if (bundle != null && bundle.containsKey("sendAlarm")) {
-                            if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                        if (bundle != null && bundle.containsKey("launchAlarm")) {
+                            if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
                                 LauncherModule.startAlarm(mActivity); 
                             }
                         }                                
                     }
                 });
             } else {
-                if (bundle != null && bundle.containsKey("sendAlarm")) {
-                    if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                if (bundle != null && bundle.containsKey("launchAlarm")) {
+                    if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
                         LauncherModule.startAlarm(mActivity); 
                     }
                 }                  
