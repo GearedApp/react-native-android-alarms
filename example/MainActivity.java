@@ -56,8 +56,8 @@ public class MainActivity extends ReactActivity {
             if (bundle != null && bundle.containsKey(MISSED_ALARMS)) {
                 mInitialProps.putString(MISSED_ALARMS, bundle.getString(MISSED_ALARMS));
             }   
-            if (bundle != null && bundle.containsKey("sendAlarm")) {
-                if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+            if (bundle != null && bundle.containsKey("launchAlarm")) {
+                if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
                     mInitialProps.putBoolean("alarmOn", true);
                 }
             }       
@@ -66,16 +66,16 @@ public class MainActivity extends ReactActivity {
             if (context == null) {
                 mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                     public void onReactContextInitialized(ReactContext context) {
-                        if (bundle != null && bundle.containsKey("sendAlarm")) {
-                            if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                        if (bundle != null && bundle.containsKey("launchAlarm")) {
+                            if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
                                 LauncherModule.startAlarm(mActivity); 
                             }
                         }                                
                     }
                 });
             } else {
-                if (bundle != null && bundle.containsKey("sendAlarm")) {
-                    if (bundle.getString("sendAlarm").equals("sendAlarmOn")) {
+                if (bundle != null && bundle.containsKey("launchAlarm")) {
+                    if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
                         LauncherModule.startAlarm(mActivity); 
                     }
                 }                  
