@@ -10,18 +10,18 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String alarmID = intent.getAction();
-		String sendAlarmOn = "sendAlarmOn";
-        launchApplication(context, alarmID, sendAlarmOn);
+		String ringtoneOn = "ringtoneOn";
+        launchApplication(context, alarmID, ringtoneOn);
     }
 
-    private void launchApplication(Context context, String alarmID, String sendAlarmOn) {
+    private void launchApplication(Context context, String alarmID, String ringtoneOn) {
         String packageName = context.getApplicationContext().getPackageName();
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
 
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         launchIntent.putExtra("alarmID", alarmID);
-		launchIntent.putExtra("sendAlarm", sendAlarmOn);
+		launchIntent.putExtra("launchAlarm", ringtoneOn);
 		
         context.startActivity(launchIntent);
         Log.i("ReactNativeAppLauncher", "AlarmReceiver: Launching: " + packageName + " " + alarmID);
