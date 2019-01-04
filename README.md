@@ -1,4 +1,4 @@
-This is moded version of this [CMP Studio library](https://github.com/CMP-Studio/react-native-android-alarms). I have no idea if it works on iOS, nontheless I also modified index.ios.js
+This is moded version of this [CMP Studio library](https://github.com/CMP-Studio/react-native-android-alarms). Tested on RN 0.57.8. I have no idea if it works on iOS, nontheless I also modified index.ios.js
 
 This React Native library will allow you to schedule and show alarms on Android (tested on >= API 21). To see a working example of this module (original one), see [Dawn Chorus](https://github.com/CMP-Studio/DawnChorus). The code for this module was modified from [Christoph Michel's App Launcher](https://github.com/MrToph/react-native-app-launcher).
 
@@ -220,10 +220,16 @@ This React Native library will allow you to schedule and show alarms on Android 
 If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component (usually index.android.js):
  
  ```
- static propTypes = {
-    alarmID: PropTypes.string,
-    missedAlarms: PropTypes.string,
-    alarmOn: PropTypes.boolean
+ import React, { Component } from "react";
+ import PropTypes from 'prop-types';
+ 
+ class YourAppName extends Component {
+ 
+    static propTypes = {
+       alarmID: PropTypes.string,
+       missedAlarms: PropTypes.string,
+       alarmOn: PropTypes.bool
+    }
  }
  ```
  And access those props elsewhere in the component with ```this.props.alarmID```, ```this.props.missedAlarms``` and ```this.props.alarmOn```
