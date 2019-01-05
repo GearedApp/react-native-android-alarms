@@ -151,8 +151,10 @@ This React Native library will allow you to schedule and show alarms on Android 
 			}
 		    }
 		    /* 
-	            * Code below checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
-	            * LauncherModule.startAlarm(mActivity) initiates android alarm ringtone. If you want to use ringtone provided by app - simply remove this part of code.
+	            Code below checks if context has been set (in case user closed the app) and if not - awaits till it's 
+		    initialized
+	            LauncherModule.startAlarm(mActivity) initiates android alarm ringtone. If you want to use ringtone provided 
+		    by app - simply remove this part of code.
 	            */
 		    ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
 		    ReactApplicationContext context = (ReactApplicationContext) mReactInstanceManager.getCurrentReactContext();    
@@ -226,7 +228,13 @@ This React Native library will allow you to schedule and show alarms on Android 
 
  ### Minimizing app
  ```javascript
- AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents android from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your the app while tapping on it and android will turn the screen off shortly after
+ /* 
+ Imitates home button and programatically minimizes app. 
+ Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents android from turning screen off. 
+ If you assotiate this method with e.g. dismiss/snooze button you will minimize your the app while tapping on it 
+ and android will turn the screen off shortly after. 
+ */
+ AndroidAlarms.minimizeApp(); 
  ```
  
  ### Reading data in React Native app
