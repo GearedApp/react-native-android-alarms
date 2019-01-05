@@ -82,100 +82,112 @@ This React Native library will allow you to schedule and show alarms on Android 
     ```
     
     
-* In `android/app/src/main/java/**/MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props
+* In `android/app/src/main/java/**/MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props (paste all necessary stuff from below):
     
     ```
+	package com.your_app_name;
+
 	import android.app.Activity;
 	import android.content.Intent;
 	import android.os.Bundle;
 	import android.view.Window;
 	import android.view.WindowManager;
+
 	import com.facebook.react.bridge.ReactApplicationContext;
 	import com.facebook.react.bridge.ReactContext;
 	import com.facebook.react.ReactActivity;
 	import com.facebook.react.ReactActivityDelegate;
-	import com.facebook.react.ReactInstanceManager;    
+	import com.facebook.react.ReactInstanceManager;
+
+	import javax.annotation.Nullable;
 	import com.dawnchorus.alarms.LauncherModule;
-	
-	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // add
-        final Window win = getWindow();
-        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-    }
-    
-    public static class AlarmActivityDelegate extends ReactActivityDelegate {
-        private static final String ALARM_ID = "alarmID";
-        private static final String MISSED_ALARMS = "missedAlarms";
-        private Bundle mInitialProps = null;
-        private final @Nullable Activity mActivity;
 
-        public AlarmActivityDelegate(Activity activity, String mainComponentName) {
-            super(activity, mainComponentName);
-            this.mActivity = activity;
-        }
+	public class MainActivity extends ReactActivity {
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            mInitialProps = new Bundle();
-            final Bundle bundle = mActivity.getIntent().getExtras();
-            if (bundle != null && bundle.containsKey(ALARM_ID)) {
-                mInitialProps.putString(ALARM_ID, bundle.getString(ALARM_ID));
-            }
-            if (bundle != null && bundle.containsKey(MISSED_ALARMS)) {
-                mInitialProps.putString(MISSED_ALARMS, bundle.getString(MISSED_ALARMS));
-            }
-            if (bundle != null && bundle.containsKey("launchAlarm")) {
-                if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
-                    mInitialProps.putBoolean("alarmOn", true);
-                }
-            }
-	        /* 
-	        * Code below checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
-	        * LauncherModule.startAlarm(mActivity) initiates android alarm ringtone. If you want to use ringtone provided by app - simply remove this part of code.
-	        */
-            ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
-            ReactApplicationContext context = (ReactApplicationContext) mReactInstanceManager.getCurrentReactContext();    
-            if (context == null) {
-                mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
-                    public void onReactContextInitialized(ReactContext context) {
-                        if (bundle != null && bundle.containsKey("launchAlarm")) {
-                            if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
-                                LauncherModule.startAlarm(mActivity); 
-                            }
-                        }                                
-                    }
-                });
-            } else {
-                if (bundle != null && bundle.containsKey("launchAlarm")) {
-                    if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
-                        LauncherModule.startAlarm(mActivity); 
-                    }
-                }                  
-            }
-            super.onCreate(savedInstanceState);
-        }
+	    @Override
+	    protected String getMainComponentName() {
+		return "YourAppName";
+	    }
 
-        @Override
-        protected Bundle getLaunchOptions() {
-            return mInitialProps;
-        }
-    };
+	    @Override
+	    protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// Add
+		final Window win = getWindow();
+		win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+			WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+			WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+			WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+			WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+	    }
 
-    @Override
-    protected ReactActivityDelegate createReactActivityDelegate() {
-        return new AlarmActivityDelegate(this, getMainComponentName());
-    }
+	    // Add
+	    public class AlarmActivityDelegate extends ReactActivityDelegate {
+		private final String ALARM_ID = "alarmID";
+		private final String MISSED_ALARMS = "missedAlarms";
+		private Bundle mInitialProps = null;
+		private final @Nullable Activity mActivity; 
+
+		public AlarmActivityDelegate(Activity activity, String mainComponentName) {
+		    super(activity, mainComponentName);
+		    this.mActivity = activity;
+		}
+
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+		    mInitialProps = new Bundle();
+		    final Bundle bundle = mActivity.getIntent().getExtras();
+		    if (bundle != null && bundle.containsKey(ALARM_ID)) {
+			mInitialProps.putString(ALARM_ID, bundle.getString(ALARM_ID));
+		    }
+		    if (bundle != null && bundle.containsKey(MISSED_ALARMS)) {
+			mInitialProps.putString(MISSED_ALARMS, bundle.getString(MISSED_ALARMS));
+		    }   
+		    if (bundle != null && bundle.containsKey("launchAlarm")) {
+			if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
+			    mInitialProps.putBoolean("alarmOn", true);
+			}
+		    }
+		    /* 
+	            * Code below checks if context has been set (in case user closed the app) and if not - awaits till it's initialized
+	            * LauncherModule.startAlarm(mActivity) initiates android alarm ringtone. If you want to use ringtone provided by app - simply remove this part of code.
+	            */
+		    ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
+		    ReactApplicationContext context = (ReactApplicationContext) mReactInstanceManager.getCurrentReactContext();    
+		    if (context == null) {
+			mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+			    public void onReactContextInitialized(ReactContext context) {
+				if (bundle != null && bundle.containsKey("launchAlarm")) {
+				    if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
+					LauncherModule.startAlarm(mActivity); 
+				    }
+				}                                
+			    }
+			});
+		    } else {
+			if (bundle != null && bundle.containsKey("launchAlarm")) {
+			    if (bundle.getString("launchAlarm").equals("ringtoneOn")) {
+				LauncherModule.startAlarm(mActivity); 
+			    }
+			}                  
+		    }
+		    super.onCreate(savedInstanceState);
+		}
+
+		@Override
+		protected Bundle getLaunchOptions() {
+		    return mInitialProps;
+		}
+	    };
+
+	    @Override
+	    protected ReactActivityDelegate createReactActivityDelegate() {
+		return new AlarmActivityDelegate(this, getMainComponentName());
+	    }
+	}
     ```
     
  ## Usage
- 
- Apart from [Dawn Chorus](https://github.com/CMP-Studio/DawnChorus) - working example of this module, you can also see a simple example of complete MainActivity.java provided in example folder.
  
  ### Scheduling Alarms
  ```
@@ -199,7 +211,7 @@ This React Native library will allow you to schedule and show alarms on Android 
  ``` 
  or
  ``` 
- // If you restarted app and want to clear an alarm, simply load it from AsyncStorage
+ // If you saved alarmID to AsyncStorage simply load it and clear an alarm (useful in case the app had been closed)
  AsyncStorage.getItem('alarmID').then((value) => {
     AndroidAlarms.clearAlarm(JSON.parse(value)); 
  });
@@ -219,6 +231,19 @@ This React Native library will allow you to schedule and show alarms on Android 
  
 If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component (usually index.android.js):
  
+ ```
+ import React, { Component, PropTypes } from "react";
+ 
+ class YourAppName extends Component {
+ 
+    static propTypes = {
+       alarmID: PropTypes.string,
+       missedAlarms: PropTypes.string,
+       alarmOn: PropTypes.boolean
+    }
+ }
+ ```
+ or, if you use React version 15.5.0 or higher (check in package.json):
  ```
  import React, { Component } from "react";
  import PropTypes from 'prop-types';
