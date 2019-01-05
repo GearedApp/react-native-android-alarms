@@ -82,7 +82,9 @@ This React Native library will allow you to schedule and show alarms on Android 
     ```
     
     
-* In `android/app/src/main/java/**/MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props (paste all necessary stuff from `MainActivity.java` example):
+* In `android/app/src/main/java/**/MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props.
+
+  Copy all necessary stuff from `MainActivity.java` example:
     
     ```java
 	package com.your_app_name;
