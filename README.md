@@ -84,7 +84,7 @@ This React Native library will allow you to schedule and show alarms on Android 
     
 * In `android/app/src/main/java/**/MainActivity.java`, 1) Add flags to Window that allow it to open over lockscreen and 2) Extend ReactActivityDelegate to pass data from the native module to your react native code as initial props (paste all necessary stuff from below):
     
-    ```
+    ```java
 	package com.your_app_name;
 
 	import android.app.Activity;
@@ -190,7 +190,7 @@ This React Native library will allow you to schedule and show alarms on Android 
  ## Usage
  
  ### Scheduling Alarms
- ```
+ ```javascript
  import AndroidAlarms from 'react-native-android-alarms';
  import moment from 'moment';
  import { AsyncStorage } from "react-native";
@@ -206,11 +206,11 @@ This React Native library will allow you to schedule and show alarms on Android 
  ```
  
  ### Clearing Alarms
- ```
+ ```javascript
  AndroidAlarms.clearAlarm(alarmID); // Clears mounted alarmID
  ``` 
  or
- ``` 
+ ```javascript 
  // If you saved alarmID to AsyncStorage simply load it and clear an alarm (useful in case the app had been closed)
  AsyncStorage.getItem('alarmID').then((value) => {
     AndroidAlarms.clearAlarm(JSON.parse(value)); 
@@ -218,12 +218,12 @@ This React Native library will allow you to schedule and show alarms on Android 
  ```
  
  ### Dismissing Alarm
- ```
+ ```javascript
  AndroidAlarms.stopAlarm(); // Turns ringtone off
  ```
 
  ### Minimizing app
- ```
+ ```javascript
  AndroidAlarms.minimizeApp(); // Imitates home button and programatically minimizes app. Might be usefull because if app is in foreground FLAG_KEEP_SCREEN_ON prevents android from truning screen off. If you assotiate this method with e.g. dismiss/snooze button you will minimize your the app while tapping on it and android will turn the screen off shortly after
  ```
  
@@ -231,7 +231,7 @@ This React Native library will allow you to schedule and show alarms on Android 
  
 If you extended your ReactActivityDelegate as shown above, you can grab the initial data from this module by adding to your main app component (usually index.android.js):
  
- ```
+ ```javascript
  import React, { Component, PropTypes } from "react";
  
  class YourAppName extends Component {
@@ -244,7 +244,7 @@ If you extended your ReactActivityDelegate as shown above, you can grab the init
  }
  ```
  or, if you use React version 15.5.0 or higher (check in package.json):
- ```
+ ```javascript
  import React, { Component } from "react";
  import PropTypes from 'prop-types';
  
@@ -266,7 +266,7 @@ If the app was launched by an alarm, the ```alarmID``` will hold the ID of the a
  ```this.props.alarmOn``` can be used to run initial alarm scene with Dismiss and Snooze buttons.
  
  Add to your main app component:
- ```
+ ```javascript
  componentDidMount() {
      if (this.props.alarmOn === true) {
          // your code
