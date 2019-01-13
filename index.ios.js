@@ -10,7 +10,11 @@ class AndroidAlarms {
   static clearAlarm() {
     console.warn(fail);
   }
-  
+
+  static startAlarm() {
+    console.warn(fail);
+  }
+
   static stopAlarm() {
     console.warn(fail);
   }

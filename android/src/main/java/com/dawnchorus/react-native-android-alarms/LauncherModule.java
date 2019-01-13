@@ -1,6 +1,5 @@
 package com.dawnchorus.alarms;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,14 +20,12 @@ import com.facebook.react.ReactActivity;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 public class LauncherModule extends ReactContextBaseJavaModule {
 
-  private static MediaPlayer mediaPlayer;
-  private static Uri uri;
-  private static ReactApplicationContext reactContext;
-  private static WeakReference<Activity> mActivity;
+  private MediaPlayer mediaPlayer;
+  private Uri uri;
+  private ReactApplicationContext reactContext;
   
   public LauncherModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -61,24 +58,19 @@ public class LauncherModule extends ReactContextBaseJavaModule {
   }
   
   // Runs android alarm ringtone
-  public static void startAlarm(final Activity activity) {
-    mActivity = new WeakReference<Activity>(activity);
-    activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-		mediaPlayer = new MediaPlayer();
-		try{
-		  mediaPlayer.setLooping(true);
-		  mediaPlayer.setDataSource(reactContext, uri);
-		  mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-		  mediaPlayer.prepare();
-		  mediaPlayer.start();
-		} catch(Exception ex){
-		  Log.i("ALARM MESSAGE", (ex == null ? "Error Message was null" : ex.getMessage()));
-		  ex.printStackTrace();
-		}
-        }
-    });
+  @ReactMethod
+  public final void startAlarm() {
+    mediaPlayer = new MediaPlayer();
+    try{
+      mediaPlayer.setLooping(true);
+      mediaPlayer.setDataSource(getReactApplicationContext(), uri);
+      mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+      mediaPlayer.prepare();
+      mediaPlayer.start();
+    } catch(Exception ex){
+      Log.i("ALARM MESSAGE", (ex == null ? "Error Message was null" : ex.getMessage()));
+      ex.printStackTrace();
+    }
   }
   
   @ReactMethod

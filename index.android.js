@@ -28,6 +28,10 @@ export default class AndroidAlarms {
         id = id.toString()  // parse to string
         NativeModules.AndroidAlarms.clearAlarm(id)
     }
+
+    static startAlarm() {
+        NativeModules.AndroidAlarms.startAlarm()
+    }
 	
     static stopAlarm() {
         NativeModules.AndroidAlarms.stopAlarm()
