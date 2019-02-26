@@ -126,6 +126,26 @@ public class LauncherModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public final void setRepeatedAlarm(String id, double timestamp) {
+    PendingIntent pendingIntent = createPendingIntent(id);
+    long timestampLong = (long)timestamp; // React Bridge doesn't understand longs
+    // get the alarm manager, and schedule an alarm that calls the receiver
+    // We will use setAlarmClock because we want an indicator to show in the status bar.
+    // If you want to modify it and are unsure what to method to use, check https://plus.google.com/+AndroidDevelopers/posts/GdNrQciPwqo
+
+    // Put the alarm into the preferences
+    SharedPreferences alarms = getReactApplicationContext().getSharedPreferences("Alarms", 0);
+    SharedPreferences.Editor editor = alarms.edit();
+    editor.putLong(id, timestampLong);
+    // Commit the edits!
+    editor.commit();
+
+    getAlarmManager().setRepeating(AlarmManager.RTC_WAKEUP, timestampLong,AlarmManager.INTERVAL_DAY * 7, pendingIntent);
+
+    Context context = getReactApplicationContext();
+  }
+
+  @ReactMethod
   public final void clearAlarm(String id) {
     // Clear alarm from the preferences
     SharedPreferences alarms = getReactApplicationContext().getSharedPreferences("Alarms", 0);
